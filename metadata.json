@@ -1,0 +1,5 @@
+{
+  "name": "GROMACS Topology Modifier",
+  "description": "A tool to modify GROMACS .gro and .top files for special peptide bonds (cyclic, isopeptide) using AI.",
+  "requestFramePermissions": []
+}
