@@ -417,11 +417,36 @@ export default function App() {
           newBondsList.push({ resId1: cleanRes1, atomName1: targetS1, resId2: cleanRes2, atomName2: targetS2, params: '1 0.20380 139745.6' });
       }
 
-      setAtomsToDelete(prev => [...prev, ...newAtomsToDelete]);
-      setChargeAdjustments(prev => [...prev, ...newChargeAdjustments]);
-      setNewBonds(prev => [...prev, ...newBondsList]);
-      setBondsToUpdate(prev => [...prev, ...newBondsToUpdate]);
-      setBondsToDelete(prev => [...prev, ...newBondsToDelete]);
+      setAtomsToDelete(prev => {
+          const combined = [...prev, ...newAtomsToDelete];
+          return combined.filter((v, i, a) => a.findIndex(t => t.resId === v.resId && t.atomName === v.atomName) === i);
+      });
+      setChargeAdjustments(prev => {
+          const combined = [...prev, ...newChargeAdjustments];
+          return combined.filter((v, i, a) => a.findIndex(t => t.resId === v.resId && t.atomName === v.atomName) === i);
+      });
+      setNewBonds(prev => {
+          const combined = [...prev, ...newBondsList];
+          return combined.filter((v, i, a) => a.findIndex(t => 
+              (t.resId1 === v.resId1 && t.atomName1 === v.atomName1 && t.resId2 === v.resId2 && t.atomName2 === v.atomName2) ||
+              (t.resId1 === v.resId2 && t.atomName1 === v.atomName2 && t.resId2 === v.resId1 && t.atomName2 === v.atomName1)
+          ) === i);
+      });
+      setBondsToUpdate(prev => {
+          const combined = [...prev, ...newBondsToUpdate];
+          return combined.filter((v, i, a) => a.findIndex(t => 
+              t.resId === v.resId && 
+              ((t.atomName1 === v.atomName1 && t.atomName2 === v.atomName2) || 
+               (t.atomName1 === v.atomName2 && t.atomName2 === v.atomName1))
+          ) === i);
+      });
+      setBondsToDelete(prev => {
+          const combined = [...prev, ...newBondsToDelete];
+          return combined.filter((v, i, a) => a.findIndex(t => 
+              (t.resId1 === v.resId1 && t.atomName1 === v.atomName1 && t.resId2 === v.resId2 && t.atomName2 === v.atomName2) ||
+              (t.resId1 === v.resId2 && t.atomName1 === v.atomName2 && t.resId2 === v.resId1 && t.atomName2 === v.atomName1)
+          ) === i);
+      });
 
     } catch (err: any) {
       console.error(err);
@@ -962,7 +987,7 @@ export default function App() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* Left Column: Inputs */}
-          <div className="lg:col-span-5 space-y-6">
+          <div className="lg:col-span-5 space-y-6 sticky top-24 h-[calc(100vh-8rem)] overflow-y-auto pr-2 pb-4">
             
             {/* File Uploads */}
             <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
@@ -1244,7 +1269,7 @@ export default function App() {
 
           {/* Right Column: Results */}
           <div className="lg:col-span-7">
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 h-full min-h-[600px] flex flex-col overflow-hidden">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden sticky top-24 h-[calc(100vh-8rem)]">
               
               {!result && !isProcessing ? (
                 <div className="flex-1 flex flex-col items-center justify-center text-slate-400 p-8 text-center">
